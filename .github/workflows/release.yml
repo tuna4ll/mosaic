@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: install build dependencies
-        run: sudo apt-get update && sudo apt-get install -y gm2 make pkg-config libx11-dev libxft-dev
+        run: sudo apt-get update && sudo apt-get install -y gm2 make pkg-config libx11-dev libxft-dev libimlib2-dev
 
       - name: build
         # users will not have the gm2 runtime, so link it (and libstdc++) statically

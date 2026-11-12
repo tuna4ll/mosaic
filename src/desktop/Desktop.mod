@@ -3,7 +3,8 @@ IMPLEMENTATION MODULE Desktop ;
 FROM Xlib IMPORT Time, Pixmap, None, XCreatePixmap, XFreePixmap,
                  XSetWindowBackgroundPixmap, XSetWindowBackground,
                  XClearWindow ;
-FROM XServer IMPORT dpy, root, depth ;
+FROM XServer IMPORT dpy, root, depth, visual, colormap, width, height ;
+FROM Wallpaper IMPORT mx_wallpaper ;
 FROM Menu IMPORT Dispatch ;
 FROM Gfx IMPORT Surface ;
 FROM Spawn IMPORT Args ;
@@ -23,7 +24,21 @@ PROCEDURE Paint ;
 VAR
   s: Surface ;
   style: ARRAY [0..15] OF CHAR ;
+  image: ARRAY [0..1023] OF CHAR ;
 BEGIN
+  Config.Get ("desktop.image", "", image) ;
+  IF image[0] # 0C
+  THEN
+    pattern := mx_wallpaper (dpy, root, visual, colormap, depth, image,
+                             width, height) ;
+    IF pattern # None
+    THEN
+      IF XSetWindowBackgroundPixmap (dpy, root, pattern) = 0 THEN END ;
+      IF XClearWindow (dpy, root) = 0 THEN END ;
+      RETURN
+    END ;
+    Log.Error2 ("cannot load desktop.image, using the pattern", image)
+  END ;
   Config.Get ("desktop.pattern", "tiles", style) ;
   IF Str.Equal (style, "solid")
   THEN
