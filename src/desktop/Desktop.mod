@@ -4,7 +4,7 @@ FROM Xlib IMPORT Time, Pixmap, None, XCreatePixmap, XFreePixmap,
                  XSetWindowBackgroundPixmap, XSetWindowBackground,
                  XClearWindow ;
 FROM XServer IMPORT dpy, root, depth, visual, colormap, width, height ;
-FROM Wallpaper IMPORT mx_wallpaper ;
+FROM Wallpaper IMPORT mx_wallpaper, Fill, Fit, Center, Tiled ;
 FROM Menu IMPORT Dispatch ;
 FROM Gfx IMPORT Surface ;
 FROM Spawn IMPORT Args ;
@@ -20,6 +20,21 @@ CONST
 VAR
   pattern: Pixmap ;
 
+PROCEDURE ImageMode () : INTEGER ;
+VAR
+  mode: ARRAY [0..15] OF CHAR ;
+BEGIN
+  Config.Get ("desktop.image.mode", "fill", mode) ;
+  IF Str.Equal (mode, "fit") THEN RETURN Fit END ;
+  IF Str.Equal (mode, "center") THEN RETURN Center END ;
+  IF Str.Equal (mode, "tile") THEN RETURN Tiled END ;
+  IF NOT Str.Equal (mode, "fill")
+  THEN
+    Log.Error2 ("unknown desktop.image.mode, using fill", mode)
+  END ;
+  RETURN Fill
+END ImageMode ;
+
 PROCEDURE Paint ;
 VAR
   s: Surface ;
@@ -30,6 +45,7 @@ BEGIN
   IF image[0] # 0C
   THEN
     pattern := mx_wallpaper (dpy, root, visual, colormap, depth, image,
+                             ImageMode (), Gfx.Pixel (Gfx.Desk),
                              width, height) ;
     IF pattern # None
     THEN

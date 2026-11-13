@@ -5,12 +5,19 @@ DEFINITION MODULE FOR "C" Wallpaper ;
 FROM SYSTEM IMPORT ADDRESS ;
 FROM Xlib IMPORT Display, Window ;
 
-EXPORT UNQUALIFIED mx_wallpaper ;
+EXPORT UNQUALIFIED mx_wallpaper, Fill, Fit, Center, Tiled ;
 
-(* a screen-sized pixmap showing the image at path, 0 if it cannot be read *)
+CONST
+  Fill = 0 ;
+  Fit = 1 ;
+  Center = 2 ;
+  Tiled = 3 ;
+
+(* a pixmap showing the image at path, 0 if it cannot be read;
+   bg fills what the image leaves uncovered *)
 PROCEDURE mx_wallpaper (dpy: Display; root: Window; visual: ADDRESS;
                         colormap: LONGCARD; depth: INTEGER;
-                        path: ARRAY OF CHAR;
+                        path: ARRAY OF CHAR; mode: INTEGER; bg: LONGCARD;
                         width, height: INTEGER) : LONGCARD ;
 
 END Wallpaper.

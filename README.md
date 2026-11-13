@@ -63,6 +63,7 @@ font = DejaVu Sans:size=9
 color.active = #2e4a66
 desktop.pattern = tiles
 desktop.image = ~/Pictures/wallpaper.jpg
+desktop.image.mode = fill   # fill | fit | center | tile
 clock.format = %a %d %b  %H:%M
 panel.position = top        # or bottom
 ```
