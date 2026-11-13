@@ -1302,7 +1302,10 @@ BEGIN
     Keys.SendPrev: SendAndFollow (-1) |
     Keys.OpenLauncher: Desktop.Launch (Desktop.Launcher) |
     Keys.OpenTerminal: Desktop.Launch (Desktop.Terminal) |
-    Keys.OpenFiles: Desktop.Launch (Desktop.Files)
+    Keys.OpenFiles: Desktop.Launch (Desktop.Files) |
+    Keys.VolumeUp: Keys.RunVolumeAction (Keys.VolumeUp) |
+    Keys.VolumeDown: Keys.RunVolumeAction (Keys.VolumeDown) |
+    Keys.VolumeToggleMute: Keys.RunVolumeAction (Keys.VolumeToggleMute) |
   ELSE
   END
 END RunAction ;

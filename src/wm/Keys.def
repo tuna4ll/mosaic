@@ -6,12 +6,15 @@ TYPE
   Action = (NoAction, CycleNext, CyclePrev, CloseWindow, MinimizeWindow,
             MaximizeWindow, FullscreenWindow, DesktopNext, DesktopPrev,
             GotoDesktop, SendNext, SendPrev, OpenLauncher, OpenTerminal,
-            OpenFiles) ;
+            OpenFiles, VolumeUp, VolumeDown, VolumeToggleMute) ;
 
 PROCEDURE Grab ;
 
 (* action bound to a key press, with its argument for GotoDesktop *)
 PROCEDURE Lookup (code, state: CARDINAL; VAR arg: INTEGER) : Action ;
+
+(* run a volume action *)
+PROCEDURE RunVolumeAction (action: Action);
 
 (* is keycode the alt key that ends window cycling *)
 PROCEDURE IsCycleModifier (keycode: CARDINAL) : BOOLEAN ;

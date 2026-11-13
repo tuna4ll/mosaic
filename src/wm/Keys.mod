@@ -5,6 +5,9 @@ FROM Xlib IMPORT KeySym, XKeysymToKeycode, XGrabKey, XUngrabKey,
                  LockMask, ControlMask, Mod1Mask, Mod4Mask ;
 FROM XGlue IMPORT mx_numlock_mask ;
 FROM XServer IMPORT dpy, root ;
+FROM SYSTEM IMPORT ADR, ADDRESS ;
+IMPORT Log ;
+FROM libc IMPORT system ;
 
 CONST
   MaxBindings = 32 ;
@@ -22,6 +25,9 @@ CONST
   XKAltR = 0FFEAH ;
   XK1 = 031H ;
   XKt = 074H ;
+  XRaiseVolume = 1008FF13H ;
+  XLowerVolume = 1008FF11H ;
+  XMuteAudio = 1008FF12H ;
 
 TYPE
   Binding = RECORD
@@ -107,6 +113,45 @@ BEGIN
          (keycode = ORD (XKeysymToKeycode (dpy, XKAltR)))
 END IsCycleModifier ;
 
+PROCEDURE RunMixerCommand (command: ADDRESS) ;
+VAR
+  status: INTEGER ;
+BEGIN
+  status := system (command) ;
+  IF status # 0
+  THEN
+    Log.Error2 ("keys", "volume command failed") ;
+  END
+END RunMixerCommand ;
+
+PROCEDURE DoVolumeUp ;
+BEGIN
+  RunMixerCommand (ADR("amixer -q set Master 5%+"))
+END DoVolumeUp ;
+
+PROCEDURE DoVolumeDown ;
+BEGIN
+  RunMixerCommand (ADR("amixer -q set Master 5%-"))
+END DoVolumeDown ;
+
+PROCEDURE DoVolumeToggleMute ;
+BEGIN
+  RunMixerCommand (ADR ("amixer -q set Master toggle")) ;
+END DoVolumeToggleMute ;
+
+PROCEDURE RunVolumeAction (action: Action);
+BEGIN
+  CASE action OF
+    VolumeUp:
+      DoVolumeUp |
+    VolumeDown:
+      DoVolumeDown |
+    VolumeToggleMute:
+      DoVolumeToggleMute
+  ELSE
+  END
+END RunVolumeAction;
+
 PROCEDURE BindDefaults ;
 VAR
   i: INTEGER ;
@@ -122,6 +167,10 @@ BEGIN
   Bind (XKLeft, ControlMask + Mod1Mask, DesktopPrev, 0) ;
   Bind (XKRight, ControlMask + Mod1Mask + ShiftMask, SendNext, 0) ;
   Bind (XKLeft, ControlMask + Mod1Mask + ShiftMask, SendPrev, 0) ;
+  Bind (XRaiseVolume, 0, VolumeUp, 0) ;
+  Bind (XLowerVolume, 0, VolumeDown, 0) ;
+  Bind (XMuteAudio, 0, VolumeToggleMute, 0) ;
+
   FOR i := 0 TO 8 DO
     Bind (XK1 + VAL (KeySym, i), ControlMask + Mod1Mask, GotoDesktop, i)
   END ;
