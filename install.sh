@@ -39,7 +39,7 @@ sed "s|=mosaic\$|=$PREFIX/bin/mosaic|" "$NAME/mosaic.desktop" > mosaic.desktop
 $sudo install -m 644 mosaic.desktop /usr/share/xsessions/mosaic.desktop
 
 if ldd "$PREFIX/bin/mosaic" | grep -q 'not found'; then
-	echo "mosaic: missing libraries, install libx11 and libxft:" >&2
+	echo "mosaic: missing libraries, install libx11, libxft and imlib2:" >&2
 	ldd "$PREFIX/bin/mosaic" | grep 'not found' >&2
 fi
 

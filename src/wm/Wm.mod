@@ -1591,7 +1591,10 @@ BEGIN
   height := e.height ;
   Ewmh.SetDesktops (desktopCount, currentDesktop) ;
   workWidth := -1 ;
-  UpdateWorkarea
+  UpdateWorkarea ;
+  (* the wallpaper is scaled to the old size *)
+  Desktop.Release ;
+  Desktop.Paint
 END OnRootConfigure ;
 
 PROCEDURE Handle (VAR e: Event) ;
