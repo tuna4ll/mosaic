@@ -46,7 +46,8 @@ EXPORT UNQUALIFIED
   XDrawRectangle, XCreatePixmap, XFreePixmap, XCopyArea,
   XQueryTree, XGrabServer,
   XUngrabServer, XAllowEvents, XQueryPointer, XSetTransientForHint,
-  XGrabKeyboard, XUngrabKeyboard, XBell, XQueryKeymap ;
+  XGrabKeyboard, XUngrabKeyboard, XBell, XQueryKeymap,
+  XSetSelectionOwner, XGetSelectionOwner ;
 
 TYPE
   Display = ADDRESS ;
@@ -232,6 +233,9 @@ PROCEDURE XGetWindowProperty (dpy: Display; w: Window; property: Atom;
                               VAR nitems, bytesAfter: LONGCARD;
                               VAR prop: ADDRESS) : INTEGER ;
 PROCEDURE XKillClient (dpy: Display; resource: LONGCARD) : INTEGER ;
+PROCEDURE XSetSelectionOwner (dpy: Display; selection: Atom; owner: Window;
+                              time: Time) : INTEGER ;
+PROCEDURE XGetSelectionOwner (dpy: Display; selection: Atom) : Window ;
 PROCEDURE XAddToSaveSet (dpy: Display; w: Window) : INTEGER ;
 PROCEDURE XRemoveFromSaveSet (dpy: Display; w: Window) : INTEGER ;
 PROCEDURE XSetWindowBorderWidth (dpy: Display; w: Window;
