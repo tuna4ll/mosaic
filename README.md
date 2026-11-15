@@ -7,7 +7,7 @@ A lightweight, retro UNIX desktop environment for X11, written in Modula-2.
 Mosaic includes:
 
 - `mosaic`: the window manager and desktop. It draws the window frames and handles virtual desktops, the EWMH/ICCCM conventions and the desktop menu.
-- `mosaic-panel`: the panel, with a launcher button, desktop switcher, task list, clock and session menu.
+- `mosaic-panel`: the panel, with a launcher button, desktop switcher, task list, system tray, clock and session menu.
 - `mosaic-launcher`: an application launcher that reads freedesktop `.desktop` files.
 - `mosaic-files`: a file manager that can copy, move, rename and delete.
 

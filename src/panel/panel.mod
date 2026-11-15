@@ -1,7 +1,7 @@
 MODULE panel ;
 
-(* mosaic-panel: launcher button, desktops, task list, clock and the
-   session menu along the top edge of the screen *)
+(* mosaic-panel: launcher button, desktops, task list, system tray, clock
+   and the session menu along the top edge of the screen *)
 
 FROM Xlib IMPORT XMapWindow, XMoveResizeWindow, XSelectInput, Expose,
                  ButtonPress, ConfigureNotify, PropertyChangeMask,
@@ -14,18 +14,19 @@ FROM libc IMPORT exit, time ;
 FROM Gfx IMPORT Surface ;
 FROM Spawn IMPORT Args ;
 IMPORT XServer, Atoms, Config, Gfx, Win, Menu, Dialog, Spawn, Props, Str,
-       Tasks, Log ;
+       Tasks, Tray, Log ;
 
 CONST
   Gap = 4 ;
   MaxTaskWidth = 200 ;
   MinTaskWidth = 40 ;
   MoreWidth = 44 ;
-  ZoneLimit = Tasks.MaxTasks + Tasks.MaxDesktops + 4 ;
+  ZoneLimit = Tasks.MaxTasks + Tasks.MaxDesktops + 5 ;
+  TrayPad = 3 ;
 
 TYPE
-  ZoneKind = (LauncherZone, DesktopZone, TaskZone, MoreZone, ClockZone,
-              SessionZone) ;
+  ZoneKind = (LauncherZone, DesktopZone, TaskZone, MoreZone, TrayZone,
+              ClockZone, SessionZone) ;
   Zone = RECORD
     kind: ZoneKind ;
     x, w, index: INTEGER ;
@@ -100,6 +101,15 @@ BEGIN
   w := Gfx.TextWidth (clockText, FALSE) + 20 ;
   DEC (right, w + Gap) ;
   AddZone (ClockZone, right, w, 0) ;
+  w := Tray.Width () ;
+  IF w > 0
+  THEN
+    INC (w, 2 * TrayPad) ;
+    DEC (right, w + Gap) ;
+    AddZone (TrayZone, right, w, 0)
+  END ;
+  (* the icons sit in the sunken well the zone draws *)
+  Tray.Place (right + TrayPad, 5) ;
   DEC (right, Gap + 4) ;
   n := 0 ;
   FOR i := 0 TO Tasks.count - 1 DO
@@ -208,6 +218,8 @@ BEGIN
       IF Str.Assign ("+", text) AND Str.Append (label, text) THEN END ;
       tw := Gfx.TextWidth (text, FALSE) ;
       Gfx.Text (s, z.x + (z.w - tw) DIV 2, ty, text, Gfx.Ink, FALSE) |
+    TrayZone:
+      Gfx.Bevel (s, z.x, y, z.w, h, FALSE) |
     ClockZone:
       Gfx.Bevel (s, z.x, y, z.w, h, FALSE) ;
       Gfx.Text (s, z.x + 10, ty, clockText, Gfx.Ink, FALSE) |
@@ -451,7 +463,7 @@ BEGIN
     width := e.width ;
     XServer.height := e.height ;
     Place
-  ELSIF Tasks.Changed (e)
+  ELSIF Tray.Handle (e) OR Tasks.Changed (e)
   THEN
     Draw
   END
@@ -517,6 +529,7 @@ BEGIN
   Props.SetCardinal (panel^.window, Atoms.NetWmDesktop, XA_CARDINAL,
                      0FFFFFFFFH) ;
   Place ;
+  Tray.Init (panel^.window, height - 10) ;
   (* select before reading so no change slips between the two *)
   IF XSelectInput (dpy, root, PropertyChangeMask + StructureNotifyMask) = 0
   THEN
@@ -539,6 +552,7 @@ BEGIN
       running := FALSE
     END
   END ;
+  Tray.Done ;
   Win.Destroy (panel) ;
   Gfx.Done ;
   XServer.Close ;

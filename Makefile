@@ -34,7 +34,7 @@ COMMON_OBJS := Log.o Str.o TextFile.o Config.o Spawn.o XServer.o Atoms.o Props.o
 
 MOSAIC_OBJS := mosaic.o Desktop.o wallpaper.o Clients.o Frames.o Keys.o Ewmh.o Wm.o \
 	$(COMMON_OBJS)
-PANEL_OBJS := panel.o Tasks.o Dialog.o $(COMMON_OBJS)
+PANEL_OBJS := panel.o Tasks.o Tray.o Dialog.o $(COMMON_OBJS)
 LAUNCHER_OBJS := launcher.o Entries.o Dialog.o $(COMMON_OBJS)
 FILES_OBJS := files.o Fs.o Dialog.o $(COMMON_OBJS)
 

@@ -1,0 +1,24 @@
+DEFINITION MODULE Tray ;
+
+(* freedesktop system tray: xembed icons docked into the panel *)
+
+FROM Xlib IMPORT Window ;
+FROM XGlue IMPORT Event ;
+
+(* become the tray of the screen; icons are iconSize pixels square and live
+   in a child of parent *)
+PROCEDURE Init (parent: Window; iconSize: INTEGER) ;
+
+(* width the visible icons need, 0 when there are none *)
+PROCEDURE Width () : INTEGER ;
+
+(* put the icons at x, y in the parent *)
+PROCEDURE Place (x, y: INTEGER) ;
+
+(* true when e belonged to the tray; the width may have changed *)
+PROCEDURE Handle (VAR e: Event) : BOOLEAN ;
+
+(* give the icons back so another tray can take them *)
+PROCEDURE Done ;
+
+END Tray.
